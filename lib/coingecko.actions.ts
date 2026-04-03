@@ -2,11 +2,7 @@
 
 import qs from "query-string";
 
-const BASE_URL = process.env.COINGECKO_BASE_URL;
-const API_KEY = process.env.COINGECKO_API_KEY;
-console.log(process.env)
-if (!BASE_URL) throw new Error("Could not get the base URL");
-if (!API_KEY) throw new Error("Could not get the API key");
+const BASE_URL = process.env.COINGECKO_BASE_URL || 'https://api.coingecko.com/api/v3';
 
 type QueryParams = Record<string, string | number | boolean | undefined>;
 
@@ -34,7 +30,6 @@ export async function fetcher<T>(
 
   const response = await fetch(url, {
     headers: {
-      "x-cg-demo-api-key": API_KEY, // ✅ DEMO KEY ONLY
       "Content-Type": "application/json",
     } as Record<string, string>,
     next: { revalidate },
@@ -55,4 +50,40 @@ export async function fetcher<T>(
   }
 
   return response.json();
+}
+export async function getPools(
+  id: string,
+  network?: string | null,
+  contractAddress?: string | null,
+): Promise<PoolData> {
+  const fallback: PoolData = {
+    id: '',
+    address: '',
+    name: '',
+    network: '',
+  };
+
+  if (network && contractAddress) {
+    try {
+      const poolData = await fetcher<{ data: PoolData[] }>({
+        endpoint: `/onchain/networks/${network}/tokens/${contractAddress}/pools`,
+      });
+
+      return poolData.data?.[0] ?? fallback;
+    } catch (error) {
+      console.log(error);
+      return fallback;
+    }
+  }
+
+  try {
+    const poolData = await fetcher<{ data: PoolData[] }>({
+      endpoint: '/onchain/search/pools',
+      params: { query: id },
+    });
+
+    return poolData.data?.[0] ?? fallback;
+  } catch {
+    return fallback;
+  }
 }

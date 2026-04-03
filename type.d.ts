@@ -190,6 +190,7 @@ interface CoinDetailsData {
   market_data: {
     current_price: {
       usd: number;
+      inr?: number;
       [key: string]: number;
     };
     price_change_24h_in_currency: {
@@ -209,6 +210,10 @@ interface CoinDetailsData {
     };
   };
   market_cap_rank: number;
+  circulating_supply?: number;
+  total_supply?: number;
+  ath?: number;
+  atl?: number;
   description: {
     en: string;
   };

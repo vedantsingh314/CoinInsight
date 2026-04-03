@@ -34,6 +34,9 @@ const CandlestickChart = ({
 
   const fetchOHLCData = async (selectedPeriod: Period) => {
     try {
+      // Add delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const { days } = PERIOD_CONFIG[selectedPeriod];
       const params = new URLSearchParams({
         vs_currency: 'inr',
@@ -141,20 +144,6 @@ const CandlestickChart = ({
               key={value}
               className={period === value ? 'config-button-active' : 'config-button'}
               onClick={() => handlePeriodChange(value)}
-              disabled={isPending}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className="button-group">
-          <span className="text-sm mx-2 font-medium text-purple-100/50">Update Frequency:</span>
-          {LIVE_INTERVAL_BUTTONS.map(({ value, label }) => (
-            <button
-              key={value}
-              className={liveInterval === value ? 'config-button-active' : 'config-button'}
-              onClick={() => setLiveInterval(value)}
               disabled={isPending}
             >
               {label}

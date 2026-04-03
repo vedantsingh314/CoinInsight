@@ -118,3 +118,19 @@ export const buildPageNumbers = (
 
   return pages;
 };
+
+
+export function giveAbbreviationCrypto(p: string) {
+  const map: Record<string, string> = {
+    bitcoin: "BTC",
+    btc: "BTC",
+    ethereum: "ETH",
+    eth: "ETH",
+    solana: "SOL",
+    sol: "SOL",
+    dogecoin: "DOGE",
+    doge: "DOGE"
+  };
+
+  return map[p.toLowerCase()] || p.toUpperCase();
+}
