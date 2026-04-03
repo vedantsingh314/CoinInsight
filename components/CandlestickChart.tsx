@@ -7,7 +7,7 @@ import {
   LIVE_INTERVAL_BUTTONS,
   PERIOD_BUTTONS,
   PERIOD_CONFIG,
-} from '@/constants';
+} from '../constants';
 import { CandlestickSeries, createChart, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { fetcher } from '@/lib/coingecko.actions';
 import { convertOHLCData } from '@/lib/utils';
@@ -20,9 +20,9 @@ const CandlestickChart = ({
   initialPeriod = 'daily',
   liveOhlcv = null,
   mode = 'historical',
-  liveInterval,
-  setLiveInterval,
-}: CandlestickChartProps) => {
+}: Omit<CandlestickChartProps, 'liveInterval' | 'setLiveInterval'>) => {
+  // Manage liveInterval state internally
+  const [liveInterval, setLiveInterval] = useState<'1s' | '1m'>('1m');
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -34,15 +34,14 @@ const CandlestickChart = ({
 
   const fetchOHLCData = async (selectedPeriod: Period) => {
     try {
-      const { days, interval } = PERIOD_CONFIG[selectedPeriod];
-
-      const newData = await fetcher<OHLCData[]>(`/coins/${coinId}/ohlc`, {
-        vs_currency: 'usd',
-        days,
-        interval,
-        precision: 'full',
+      const { days } = PERIOD_CONFIG[selectedPeriod];
+      const params = new URLSearchParams({
+        vs_currency: 'inr',
+        days: String(days),
+      }).toString();
+      const newData = await fetcher<OHLCData[]>({
+        endpoint: `/coins/${coinId}/ohlc?${params}`,
       });
-
       startTransition(() => {
         setOhlcData(newData ?? []);
       });
@@ -149,21 +148,19 @@ const CandlestickChart = ({
           ))}
         </div>
 
-        {liveInterval && (
-          <div className="button-group">
-            <span className="text-sm mx-2 font-medium text-purple-100/50">Update Frequency:</span>
-            {LIVE_INTERVAL_BUTTONS.map(({ value, label }) => (
-              <button
-                key={value}
-                className={liveInterval === value ? 'config-button-active' : 'config-button'}
-                onClick={() => setLiveInterval && setLiveInterval(value)}
-                disabled={isPending}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="button-group">
+          <span className="text-sm mx-2 font-medium text-purple-100/50">Update Frequency:</span>
+          {LIVE_INTERVAL_BUTTONS.map(({ value, label }) => (
+            <button
+              key={value}
+              className={liveInterval === value ? 'config-button-active' : 'config-button'}
+              onClick={() => setLiveInterval(value)}
+              disabled={isPending}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div ref={chartContainerRef} className="chart" style={{ height }} />

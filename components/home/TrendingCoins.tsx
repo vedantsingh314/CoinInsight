@@ -10,7 +10,7 @@ const TrendingCoins = async () => {
   let trendingCoins;
 
   try {
-    trendingCoins = await fetcher<{ coins: TrendingCoin[] }>('/search/trending', undefined, 300);
+    trendingCoins = await fetcher<{ coins: TrendingCoin[] }>({ endpoint: '/search/trending', revalidate: 300 });
   } catch (error) {
     console.error('Error fetching trending coins:', error);
     return <TrendingCoinsFallback />;
@@ -36,12 +36,13 @@ const TrendingCoins = async () => {
       cellClassName: 'change-cell',
       cell: (coin) => {
         const item = coin.item;
-        const isTrendingUp = item.data.price_change_percentage_24h.usd > 0;
+        const change = item.data.price_change_percentage_24h.usd;
+        const isTrendingUp = change > 0;
 
         return (
           <div className={cn('price-change', isTrendingUp ? 'text-green-500' : 'text-red-500')}>
             <p className="flex items-center">
-              {formatPercentage(item.data.price_change_percentage_24h.usd)}
+              {formatPercentage(change)}
               {isTrendingUp ? (
                 <TrendingUp width={16} height={16} />
               ) : (
@@ -55,7 +56,7 @@ const TrendingCoins = async () => {
     {
       header: 'Price',
       cellClassName: 'price-cell',
-      cell: (coin) => formatCurrency(coin.item.data.price),
+      cell: (coin) => formatCurrency(coin.item.data.price, 2, 'INR'),
     },
   ];
 

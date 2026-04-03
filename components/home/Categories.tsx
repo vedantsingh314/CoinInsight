@@ -7,7 +7,7 @@ import { CategoriesFallback } from './fallback';
 
 const Categories = async () => {
   try {
-    const categories = await fetcher<Category[]>('/coins/categories');
+    const categories = await fetcher<Category[]>({ endpoint: '/coins/categories' });
 
     const columns: DataTableColumn<Category>[] = [
       { header: 'Category', cellClassName: 'category-cell', cell: (category) => category.name },
@@ -42,12 +42,12 @@ const Categories = async () => {
       {
         header: 'Market Cap',
         cellClassName: 'market-cap-cell',
-        cell: (category) => formatCurrency(category.market_cap),
+        cell: (category) => formatCurrency(category.market_cap, 2, 'INR'),
       },
       {
         header: '24h Volume',
         cellClassName: 'volume-cell',
-        cell: (category) => formatCurrency(category.volume_24h),
+        cell: (category) => formatCurrency(category.volume_24h, 2, 'INR'),
       },
     ];
 
