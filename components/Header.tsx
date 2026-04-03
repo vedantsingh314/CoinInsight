@@ -17,7 +17,7 @@ const Header = () => {
                 <Link href="/" className={cn('nav-link',{'is-active':pathname==='/','is-hime':true})}>Home</Link>
                 
                 <p>Search Modal</p>
-                <Link href="/coins" className={cn('nav-link',{'is-active':pathname='/coins',})}>All coins</Link>
+                <Link href="/coins" className={cn('nav-link',{'is-active':pathname==='/coins',})}>All coins</Link>
             </nav>
         </div>
     </header>
