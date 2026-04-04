@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CoinInsight",
+  title: "CryptoInsight",
   description: "AI-powered crypto analytics platform that combines real-time market data from CoinGecko with NLP-based sentiment analysis using Hugging Face to generate predictive trading insights.",
 };
 
